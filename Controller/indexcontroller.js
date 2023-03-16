@@ -2,6 +2,8 @@ const login = require('../Model/model')
 const jwt = require("jsonwebtoken")
 
 
+
+
 function createToken(id){
     return jwt.sign({id}, process.env.SECRET_KEY)
 }
@@ -26,10 +28,9 @@ return errors;
 }
 
 const getReq = async (req,res) => {
-     const result = await login.find({})
      try{
-        res.json(result)
-
+      const result = await login.find({})
+      res.status(200).json(result)
      }
      catch(err){
         console.log(err)
@@ -43,7 +44,6 @@ const postReq = async (req,res) => {
      
      try{
       await Login.save()
-      res.cookie(token)
       res.status(200).json({
         message: 'Data sent Successful'
       })
@@ -54,4 +54,22 @@ const postReq = async (req,res) => {
      }
 }
 
-module.exports = {getReq, postReq}
+const postSome = async (req, res) => {
+   const {email, password} = req.body
+   try{
+      const user = await login.loggedin(email, password)
+      res.cookie("token", user.token)
+      //  res.status(200).json({user : user._id})
+      res.status(200).redirect("/some")
+   }
+   catch(err){
+      res.status(400).json({err: "not found"})
+   }
+}
+
+const logOut = async(req, res) =>{
+   res.cookie("token", '',{maxAge :1})
+   res.send("loggedout")
+}
+
+module.exports = {getReq, postReq, postSome, logOut}

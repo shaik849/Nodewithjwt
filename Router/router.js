@@ -1,13 +1,19 @@
 const router = require('express').Router()
 
-const {getReq, postReq} = require('../Controller/indexcontroller')
+const reqAuth = require("../Middleware/middle")
+
+const {getReq, postReq, postSome, logOut} = require('../Controller/indexcontroller')
 
 
 
 
-router.get("/", getReq)
+router.get("/some", reqAuth, getReq)
+
+router.post("/some", postSome)
 
 router.post("/", postReq)
+
+router.get("/logout", logOut)
 
 
 module.exports = router

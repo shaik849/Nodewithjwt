@@ -28,6 +28,22 @@ userSchema.pre('save', async function(next){
   next();
 })
 
+userSchema.statics.loggedin = async function (email, password){
+    const user = await this.findOne({email: email});
+    if(user){
+        const auth = await bcrypt.compare(password, user.password)
+
+        if(auth){
+            return user;
+        }
+        else{
+            throw Error("password error")
+        }
+    }else{
+        throw Error("user not found")
+    }
+}
+
 
 
 const login = mongoose.model("login", userSchema)
